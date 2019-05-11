@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "restore": {
+    "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj": {}
+  },
+  "projects": {
+    "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
+        "projectName": "ChessMessageEncoder",
+        "projectPath": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
+        "packagesPath": "C:\\Users\\dylan.ochoa\\.nuget\\packages\\",
+        "outputPath": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\ProgramData\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\dylan.ochoa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}
