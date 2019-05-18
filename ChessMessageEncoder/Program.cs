@@ -8,47 +8,82 @@ namespace ChessMessageEncoder
     {
         static void Main(string[] args)
         {
-            //string Input = Console.ReadLine();
-            //byte[] bytes = Encoding.UTF8.GetBytes(Input);
-            ////for (int i = 0; i < bytes.Length; i++)
-            ////{
-            ////    Console.Write(bytes[i] + " ");
-            ////}
-            //Array.Reverse(bytes);
-            //int correspondingnum = (int)Math.Pow(256, bytes.Length);
-            //for (int i = 1; i <= bytes.Length; i++)
-            //{
-            //    correspondingnum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
-            //}
-            ChessPiece piece = new ChessPiece(' ', "B2", true);
-            List<string> list = piece.GenerateMoves(new Dictionary<string, ChessPiece>());
-            for (int i = 0; i < list.Count; i++)
+            var board = new ChessBoard();
+            string Output = "";
+            string Input = Console.ReadLine();
+            byte[] bytes = Encoding.UTF8.GetBytes(Input);
+            for (int i = 0; i < bytes.Length; i++)
             {
-                Console.Write(list[i] + ",");
+                Console.Write(bytes[i] + " ");
             }
-            //Console.WriteLine("");
-            //Console.Write(correspondingnum);
-            //Console.WriteLine("");
-
+            Array.Reverse(bytes);
+            int correspondingnum = (int)Math.Pow(256, bytes.Length);
+            for (int i = 1; i <= bytes.Length; i++)
+            {
+                correspondingnum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
+            }
+            Console.WriteLine("");
+            Console.Write(correspondingnum);
+            Console.WriteLine("");
+            int round = 0;
+            while(correspondingnum != 0)
+            {
+                if(board.isWhitesTurn)
+                {
+                    round++;
+                    Output += round.ToString() + ". ";
+                }
+                var moves = board.GetAllPossibleMoves();
+                Output += moves[correspondingnum % moves.Count];
+                correspondingnum /= moves.Count;
+            }
         }
 
     }
     class ChessBoard
     {
-        Dictionary<string, ChessPiece> chessPieces;
-        bool isWhitesTurn;
-        
+        public Dictionary<string, ChessPiece> chessPieces;
+        public bool isWhitesTurn;
+        readonly List<char> abMoves = "abcdefgh".ToCharArray().ToList();
+
         public ChessBoard()
         {
             isWhitesTurn = true;
             chessPieces = new Dictionary<string, ChessPiece>();
-            int numPos = 2;
-            bool isWhite = true;
+            string pawnNumPos = "2";
+            string otherNumPos = "1";
+            bool isWhite = true;            
             for (int side = 0; side < 2; side++)
             {
-                //hey, look here!
-                //finish this!
+                for(int pawns = 0;pawns < abMoves.Count;pawns++)
+                {
+                    chessPieces.Add(abMoves[pawns] + pawnNumPos, new ChessPiece(' ', abMoves[pawns] + pawnNumPos, isWhite));
+                }
+                chessPieces.Add("a" + otherNumPos, new ChessPiece('R', "a" + otherNumPos, isWhite));
+                chessPieces.Add("b" + otherNumPos, new ChessPiece('N', "b" + otherNumPos, isWhite));
+                chessPieces.Add("c" + otherNumPos, new ChessPiece('B', "c" + otherNumPos, isWhite));
+                chessPieces.Add("d" + otherNumPos, new ChessPiece('Q', "d" + otherNumPos, isWhite));
+                chessPieces.Add("e" + otherNumPos, new ChessPiece('K', "e" + otherNumPos, isWhite));
+                chessPieces.Add("f" + otherNumPos, new ChessPiece('B', "f" + otherNumPos, isWhite));
+                chessPieces.Add("g" + otherNumPos, new ChessPiece('N', "g" + otherNumPos, isWhite));
+                chessPieces.Add("h" + otherNumPos, new ChessPiece('R', "h" + otherNumPos, isWhite));
+                pawnNumPos = "7";
+                otherNumPos = "8";
+                isWhite = false;
             }
+        }
+
+        public List<string> GetAllPossibleMoves()
+        {
+            var possibleMoves = new List<string>();
+            foreach(ChessPiece piece in chessPieces.Values)
+            {
+                if(piece.IsWhite == isWhitesTurn)
+                {
+                    possibleMoves.AddRange(piece.GenerateMoves(chessPieces));
+                }
+            }
+            return possibleMoves;
         }
     }
     class ChessPiece
@@ -76,11 +111,11 @@ namespace ChessMessageEncoder
                 case ' ':
                     if (IsWhite && int.Parse(CurrentPos[1].ToString()) + 1 < 8)
                     {
-                        addition = CurrentPos[0] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
+                        addition = "" + CurrentPos[0] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
                     }
                     else if (!IsWhite && int.Parse(CurrentPos[1].ToString()) - 1 > 1)
                     {
-                        addition = CurrentPos[0] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
+                        addition = "" + CurrentPos[0] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                     }
                     if (!chessPieces.ContainsKey(addition))
                     {
@@ -90,11 +125,11 @@ namespace ChessMessageEncoder
                     {
                         if (IsWhite)
                         {
-                            addition = CurrentPos[0] + "4";
+                            addition = "" + CurrentPos[0] + "4";
                         }
                         else
                         {
-                            addition = CurrentPos[0] + "5";
+                            addition = "" + CurrentPos[0] + "5";
                         }
                         if (!chessPieces.ContainsKey(addition))
                         {
@@ -108,11 +143,11 @@ namespace ChessMessageEncoder
                         {
                             if (IsWhite)
                             {
-                                addition = abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
+                                addition = "" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
                             }
                             else
                             {
-                                addition = abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
+                                addition = "" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                             }
                             if (chessPieces.ContainsKey(addition) && chessPieces[addition].IsWhite != chessPieces[addition].IsWhite && chessPieces[addition].PieceType != 'K')
                             {
@@ -131,60 +166,60 @@ namespace ChessMessageEncoder
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) + 1;
                                 if (abMoves.IndexOf(CurrentPos[0]) + 1 < abMoves.Count)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 2).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 2).ToString();
                                 }
                                 break;
                             case 1:
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) - 1;
                                 if (abMoves.IndexOf(CurrentPos[0]) - 1 > -1)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 2).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 2).ToString();
                                 }
                                 break;
                             case 2:
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) + 1;
                                 if (abMoves.IndexOf(CurrentPos[0]) + 1 < abMoves.Count)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 2).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 2).ToString();
                                 }
                                 break;
                             case 3:
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) - 1;
                                 if (abMoves.IndexOf(CurrentPos[0]) - 1 > -1)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 2).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 2).ToString();
                                 }
                                 break;
                             case 4:
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) + 2;
                                 if (abMoves.IndexOf(CurrentPos[0]) + 2 < abMoves.Count)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
                                 }
                                 break;
                             case 5:
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) - 2;
                                 if (abMoves.IndexOf(CurrentPos[0]) - 2 > -1)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
                                 }
                                 break;
                             case 6:
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) + 2;
                                 if (abMoves.IndexOf(CurrentPos[0]) + 2 < abMoves.Count)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                                 }
                                 break;
                             case 7:
                                 abMoveIndex = abMoves.IndexOf(CurrentPos[0]) - 2;
                                 if (abMoves.IndexOf(CurrentPos[0]) - 2 > -1)
                                 {
-                                    addition = PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
+                                    addition = "" + PieceType + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                                 }
                                 break;
                         }
-                        if (int.Parse(addition.Substring(2)) < 9 && int.Parse(addition.Substring(2)) > -1)
+                        if (int.Parse(addition.Substring(2)) < 9 && int.Parse(addition.Substring(2)) > 0)
                         {
                             if (!chessPieces.ContainsKey(addition.Substring(1)))
                             {
@@ -238,7 +273,7 @@ namespace ChessMessageEncoder
                         }
                         if(abMoves.IndexOf(CurrentPos[0]) + abMoveChange < abMoves.Count && int.Parse(CurrentPos[1].ToString()) + numMoveChange < 9 && int.Parse(CurrentPos[1].ToString()) + numMoveChange > 0)
                         {
-                            addition = abMoves[abMoves.IndexOf(CurrentPos[0]) + abMoveChange] + (int.Parse(CurrentPos[1].ToString()) + numMoveChange).ToString();
+                            addition = "" + abMoves[abMoves.IndexOf(CurrentPos[0]) + abMoveChange] + (int.Parse(CurrentPos[1].ToString()) + numMoveChange).ToString();
                             if(!chessPieces.ContainsKey(addition))
                             {
                                 possibleMoves.Add(PieceType + addition);
@@ -264,7 +299,7 @@ namespace ChessMessageEncoder
                 {
                     if (abMoves.IndexOf(currentPos[0]) + moveChange < abMoves.Count)
                     {
-                        currentPos = abMoves[abMoves.IndexOf(currentPos[0]) + moveChange].ToString() + currentPos[1];
+                        currentPos = "" + abMoves[abMoves.IndexOf(currentPos[0]) + moveChange].ToString() + currentPos[1];
                     }
                     else
                     {
@@ -288,7 +323,7 @@ namespace ChessMessageEncoder
                 {
                     if (int.Parse(currentPos[1].ToString()) + moveChange < 9 && int.Parse(currentPos[1].ToString()) + moveChange > 0)
                     {
-                        currentPos = currentPos[0] + (int.Parse(currentPos[1].ToString()) + moveChange).ToString();
+                        currentPos = "" + currentPos[0] + (int.Parse(currentPos[1].ToString()) + moveChange).ToString();
                     }
                     else
                     {
@@ -327,11 +362,12 @@ namespace ChessMessageEncoder
                         abMoveChange = 1;
                         break;
                 }
+                currentPos = CurrentPos;
                 while (true)
                 {
-                    if (abMoves.IndexOf(currentPos[0]) + abMoveChange < abMoves.Count && int.Parse(currentPos[1].ToString()) + numMoveChange < 9 && int.Parse(currentPos[1].ToString()) + numMoveChange > 0)
+                    if (abMoves.IndexOf(currentPos[0]) + abMoveChange < abMoves.Count && abMoves.IndexOf(currentPos[0]) + abMoveChange > -1 && int.Parse(currentPos[1].ToString()) + numMoveChange < 9 && int.Parse(currentPos[1].ToString()) + numMoveChange > 0)
                     {
-                        currentPos = abMoves[abMoves.IndexOf(currentPos[0]) + abMoveChange] + (int.Parse(currentPos[1].ToString()) + numMoveChange).ToString();
+                        currentPos = "" + abMoves[abMoves.IndexOf(currentPos[0]) + abMoveChange] + (int.Parse(currentPos[1].ToString()) + numMoveChange).ToString();
                     }
                     else
                     {
