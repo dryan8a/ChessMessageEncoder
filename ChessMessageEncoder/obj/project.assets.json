@@ -686,25 +686,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\dylan.ochoa\\.nuget\\packages\\": {},
+    "C:\\Users\\Dylan.Ochoa\\.nuget\\packages\\": {},
     "C:\\ProgramData\\Xamarin\\NuGet\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "\\\\GMRDC1\\Folder Redirection\\dylan.ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
+      "projectUniqueName": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
       "projectName": "ChessMessageEncoder",
-      "projectPath": "\\\\GMRDC1\\Folder Redirection\\dylan.ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
-      "packagesPath": "C:\\Users\\dylan.ochoa\\.nuget\\packages\\",
-      "outputPath": "\\\\GMRDC1\\Folder Redirection\\dylan.ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\obj\\",
+      "projectPath": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
+      "packagesPath": "C:\\Users\\Dylan.Ochoa\\.nuget\\packages\\",
+      "outputPath": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\ProgramData\\Xamarin\\NuGet\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\dylan.ochoa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Dylan.Ochoa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\GMR.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
@@ -713,6 +714,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "http://gmrdc1:10700/v3/index.json": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

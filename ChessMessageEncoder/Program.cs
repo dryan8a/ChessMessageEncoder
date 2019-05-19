@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Numerics;
+
 namespace ChessMessageEncoder
 {
     class Program
@@ -17,7 +19,7 @@ namespace ChessMessageEncoder
                 Console.Write(bytes[i] + " ");
             }
             Array.Reverse(bytes);
-            int correspondingnum = (int)Math.Pow(256, bytes.Length);
+            BigInteger correspondingnum = (BigInteger)Math.Pow(256, bytes.Length);
             for (int i = 1; i <= bytes.Length; i++)
             {
                 correspondingnum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
@@ -34,9 +36,20 @@ namespace ChessMessageEncoder
                     Output += round.ToString() + ". ";
                 }
                 var moves = board.GetAllPossibleMoves();
-                Output += moves[correspondingnum % moves.Count];
+                string tempExecutedMove = moves[(int)(correspondingnum % moves.Count)].Substring(moves[(int)(correspondingnum % moves.Count)].IndexOf("~") + 1);
+                Output += tempExecutedMove + " ";
+                board.ExecuteMoves(moves[(int)(correspondingnum % moves.Count)].Substring(0, moves[(int)(correspondingnum % moves.Count)].IndexOf("~")), tempExecutedMove);
                 correspondingnum /= moves.Count;
             }
+            if(board.isWhitesTurn)
+            {
+                Output += "{ White resigns. } 0-1";
+            }
+            else
+            {
+                Output += "{ Black resigns. } 1-0";
+            }
+            Console.WriteLine(Output);
         }
 
     }
@@ -76,6 +89,7 @@ namespace ChessMessageEncoder
         public List<string> GetAllPossibleMoves()
         {
             var possibleMoves = new List<string>();
+            var previousPieceNotation = new List<string>();
             foreach(ChessPiece piece in chessPieces.Values)
             {
                 if(piece.IsWhite == isWhitesTurn)
@@ -84,6 +98,19 @@ namespace ChessMessageEncoder
                 }
             }
             return possibleMoves;
+        }
+
+        public void ExecuteMoves(string PreviousNotation, string ExecutedMove)
+        {
+            string ExecutedPos = ExecutedMove.Substring(ExecutedMove.Length - 2);
+            string PreviousPos = PreviousNotation.Substring(PreviousNotation.Length - 2);
+            if (chessPieces.ContainsKey(ExecutedPos))
+            {
+                chessPieces.Remove(ExecutedPos);
+            }
+            chessPieces.Add(ExecutedPos, new ChessPiece(chessPieces[PreviousPos].PieceType, ExecutedPos, chessPieces[PreviousPos].IsWhite));
+            chessPieces.Remove(PreviousPos);
+            isWhitesTurn = !isWhitesTurn;
         }
     }
     class ChessPiece
@@ -119,7 +146,7 @@ namespace ChessMessageEncoder
                     }
                     if (!chessPieces.ContainsKey(addition))
                     {
-                        possibleMoves.Add(addition);
+                        possibleMoves.Add(CurrentNotation + "~" + addition);
                     }
                     if (CurrentPos[1] == '7' || CurrentPos[1] == '2')
                     {
@@ -133,7 +160,7 @@ namespace ChessMessageEncoder
                         }
                         if (!chessPieces.ContainsKey(addition))
                         {
-                            possibleMoves.Add(addition);
+                            possibleMoves.Add(CurrentNotation + "~" + addition);
                         }
                     }
                     abMoveIndex = abMoves.IndexOf(CurrentPos[0]) + 1;
@@ -151,7 +178,7 @@ namespace ChessMessageEncoder
                             }
                             if (chessPieces.ContainsKey(addition) && chessPieces[addition].IsWhite != chessPieces[addition].IsWhite && chessPieces[addition].PieceType != 'K')
                             {
-                                possibleMoves.Add(addition);
+                                possibleMoves.Add(CurrentNotation + "~" + addition);
                             }
                         }
                         abMoveIndex -= 2;
@@ -160,6 +187,7 @@ namespace ChessMessageEncoder
                 case 'N':
                     for (int i = 0; i < 8; i++)
                     {
+                        addition = "";
                         switch (i)
                         {
                             case 0:
@@ -219,17 +247,17 @@ namespace ChessMessageEncoder
                                 }
                                 break;
                         }
-                        if (int.Parse(addition.Substring(2)) < 9 && int.Parse(addition.Substring(2)) > 0)
+                        if (addition != "" && int.Parse(addition.Substring(2)) < 9 && int.Parse(addition.Substring(2)) > 0)
                         {
                             if (!chessPieces.ContainsKey(addition.Substring(1)))
                             {
-                                possibleMoves.Add(addition);
+                                possibleMoves.Add(CurrentNotation + "~" + addition);
                             }
                             if (chessPieces.ContainsKey(addition.Substring(1)) && chessPieces[addition.Substring(1)].IsWhite != IsWhite && chessPieces[addition.Substring(1)].PieceType != 'K')
                             {
-                                possibleMoves.Add(addition);
+                                possibleMoves.Add(CurrentNotation + "~" + addition);
                             }
-                        }
+                        }                        
                     }
                     break;
                 case 'B':
@@ -276,16 +304,16 @@ namespace ChessMessageEncoder
                             addition = "" + abMoves[abMoves.IndexOf(CurrentPos[0]) + abMoveChange] + (int.Parse(CurrentPos[1].ToString()) + numMoveChange).ToString();
                             if(!chessPieces.ContainsKey(addition))
                             {
-                                possibleMoves.Add(PieceType + addition);
+                                possibleMoves.Add(CurrentNotation + "~" + PieceType + addition);
                             }
                             if (chessPieces.ContainsKey(addition) && IsWhite != chessPieces[addition].IsWhite && chessPieces[addition].PieceType != 'K')
                             {
-                                possibleMoves.Add(PieceType + addition);
+                                possibleMoves.Add(CurrentNotation + "~" + PieceType + addition);
                             }                            
                         }
                     }
                     break;
-            }
+            }            
             return possibleMoves;
         }
 
@@ -309,11 +337,11 @@ namespace ChessMessageEncoder
                     {
                         if (IsWhite != chessPieces[currentPos].IsWhite && chessPieces[currentPos].PieceType != 'K')
                         {
-                            possibleMoves.Add(PieceType + currentPos);
+                            possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                         }
                         break;
                     }
-                    possibleMoves.Add(PieceType + currentPos);
+                    possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                 }
                 moveChange = -1;
             }
@@ -333,11 +361,11 @@ namespace ChessMessageEncoder
                     {
                         if (IsWhite != chessPieces[currentPos].IsWhite && chessPieces[currentPos].PieceType != 'K')
                         {
-                            possibleMoves.Add(PieceType + currentPos);
+                            possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                         }
                         break;
                     }
-                    possibleMoves.Add(PieceType + currentPos);
+                    possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                 }
                 moveChange = -1;
             }
@@ -377,11 +405,11 @@ namespace ChessMessageEncoder
                     {
                         if (IsWhite != chessPieces[currentPos].IsWhite && chessPieces[currentPos].PieceType != 'K')
                         {
-                            possibleMoves.Add(PieceType + currentPos);
+                            possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                         }
                         break;
                     }
-                    possibleMoves.Add(PieceType + currentPos);
+                    possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                 }
             }
         }
