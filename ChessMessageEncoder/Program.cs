@@ -63,7 +63,24 @@ namespace ChessMessageEncoder
                 }
                 else if(action == "2" || action == "Decode" || action == "decode" || action == "d" || action == "D")
                 {
+                    /* take leftover number (0), multiply by what you divided by
+                     * add the modded number, multiply by by what you diveded by to get that number
+                     * repeat until you have no more numbers to multiply by
+                     * check this with the JS example online, you'll get it then
+                    */ 
+                    var board = new ChessBoard();
+                    string encodedGame = Console.ReadLine();
+                    while(true)
+                    {
+                        if(board.isWhitesTurn)
+                        {
+                            encodedGame.Remove(0, 3);
+                        }
+                        var moves = board.GetAllPossibleMoves();
+                       // moves.IndexOf(encodedGame.Substring(0,index))
 
+                        
+                    }
                 }
             }
         }
