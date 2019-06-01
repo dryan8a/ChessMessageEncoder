@@ -686,8 +686,8 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Dylan.Ochoa\\.nuget\\packages\\": {},
-    "C:\\ProgramData\\Xamarin\\NuGet\\": {},
+    "C:\\Users\\dylan.ochoa\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
@@ -696,16 +696,15 @@
       "projectUniqueName": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
       "projectName": "ChessMessageEncoder",
       "projectPath": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\ChessMessageEncoder.csproj",
-      "packagesPath": "C:\\Users\\Dylan.Ochoa\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\dylan.ochoa\\.nuget\\packages\\",
       "outputPath": "\\\\GMRDC1\\Folder Redirection\\Dylan.Ochoa\\Documents\\GitHub\\ChessMessageEncoder\\ChessMessageEncoder\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\ProgramData\\Xamarin\\NuGet\\",
+        "C:\\Microsoft\\Xamarin\\NuGet\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Dylan.Ochoa\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\GMR.config",
+        "C:\\Users\\dylan.ochoa\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
@@ -714,7 +713,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "http://gmrdc1:10700/v3/index.json": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

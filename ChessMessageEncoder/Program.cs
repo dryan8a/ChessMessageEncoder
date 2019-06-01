@@ -27,16 +27,16 @@ namespace ChessMessageEncoder
                         Console.Write(bytes[i] + " ");
                     }
                     Array.Reverse(bytes);
-                    BigInteger correspondingnum = (BigInteger)Math.Pow(256, bytes.Length);
+                    BigInteger correspondingNum = (BigInteger)Math.Pow(256, bytes.Length);
                     for (int i = 1; i <= bytes.Length; i++)
                     {
-                        correspondingnum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
+                        correspondingNum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
                     }
                     Console.WriteLine("");
-                    Console.WriteLine(correspondingnum);
+                    Console.WriteLine(correspondingNum);
                     Console.WriteLine("");
                     int round = 0;
-                    while (correspondingnum != 0)
+                    while (correspondingNum != 0)
                     {
                         if (board.isWhitesTurn)
                         {
@@ -44,10 +44,10 @@ namespace ChessMessageEncoder
                             Output += round.ToString() + ". ";
                         }
                         var moves = board.GetAllPossibleMoves();
-                        string tempExecutedMove = moves[(int)(correspondingnum % moves.Count)].Substring(moves[(int)(correspondingnum % moves.Count)].IndexOf("~") + 1);
+                        string tempExecutedMove = moves[(int)(correspondingNum % moves.Count)].Substring(moves[(int)(correspondingNum % moves.Count)].IndexOf("~") + 1);
                         Output += tempExecutedMove + " ";
-                        board.ExecuteMoves(moves[(int)(correspondingnum % moves.Count)].Substring(0, moves[(int)(correspondingnum % moves.Count)].IndexOf("~")), tempExecutedMove);
-                        correspondingnum /= moves.Count;
+                        board.ExecuteMoves(moves[(int)(correspondingNum % moves.Count)].Substring(0, moves[(int)(correspondingNum % moves.Count)].IndexOf("~")), tempExecutedMove);
+                        correspondingNum /= moves.Count;
                     }
                     if (board.isWhitesTurn)
                     {
@@ -70,17 +70,47 @@ namespace ChessMessageEncoder
                     */ 
                     var board = new ChessBoard();
                     string encodedGame = Console.ReadLine();
-                    while(true)
+                    encodedGame = (encodedGame.Remove(encodedGame.Length - 22)).Trim();
+                    List<int> indeces = new List<int>();
+                    List<int> amountsOfPossibleMoves = new List<int>();
+                    while(encodedGame.Length != 0)
                     {
                         if(board.isWhitesTurn)
                         {
-                            encodedGame.Remove(0, 3);
+                            encodedGame = encodedGame.Remove(0, 3);
                         }
                         var moves = board.GetAllPossibleMoves();
-                       // moves.IndexOf(encodedGame.Substring(0,index))
+                        string correspondingStringToMoves = "";
+                        for(int i = 0;i<moves.Count;i++)
+                        {
+                            correspondingStringToMoves += (moves[i] + "|");
+                        }
+                        amountsOfPossibleMoves.Add(moves.Count);
 
-                        
+                        int amountOfCharsToRemove = 3;
+                        if(encodedGame[0] == 'K' || encodedGame[0] == 'Q' || encodedGame[0] == 'N' || encodedGame[0] == 'B' || encodedGame[0] == 'R')
+                        {
+                            amountOfCharsToRemove++;
+                        }
+                        if(encodedGame[1] == 'x')
+                        {
+                            amountOfCharsToRemove++;
+                        }
+
+                        correspondingStringToMoves = correspondingStringToMoves.Remove(correspondingStringToMoves.IndexOf(encodedGame.Substring(0, amountOfCharsToRemove - 1)) + amountOfCharsToRemove - 1);
+                        //indeces.Add(moves.IndexOf());
+                        encodedGame = encodedGame.Remove(0, amountOfCharsToRemove);
+                       
                     }
+                    BigInteger correspondingNum = 0;
+                    for(int i = 0;i<indeces.Count-1;i++)
+                    {
+                        correspondingNum += indeces[i];
+                        correspondingNum *= amountsOfPossibleMoves[i + 1];
+                    }
+                    correspondingNum += indeces[indeces.Count - 1];
+                    Console.WriteLine(correspondingNum);
+                    Console.ReadLine();
                 }
             }
         }
