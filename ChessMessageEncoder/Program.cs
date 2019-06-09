@@ -87,7 +87,7 @@ namespace ChessMessageEncoder
                 {
                     amountOfCharsToRemove++;
                 }
-                correspondingStringToMoves = correspondingStringToMoves.Remove(correspondingStringToMoves.IndexOf(encodedGame.Substring(0, amountOfCharsToRemove - 1)) + amountOfCharsToRemove - 1);
+                correspondingStringToMoves = correspondingStringToMoves.Remove(correspondingStringToMoves.IndexOf("~" + encodedGame.Substring(0, amountOfCharsToRemove - 1)) + amountOfCharsToRemove);
                 correspondingStringToMoves = correspondingStringToMoves.Substring(correspondingStringToMoves.LastIndexOf('|') + 1);
                 indeces.Add(moves.IndexOf(correspondingStringToMoves));
                 if (encodedGame.Length < amountOfCharsToRemove)
@@ -96,10 +96,9 @@ namespace ChessMessageEncoder
                 }
                 else
                 {
-                    encodedGame = encodedGame.Remove(0, amountOfCharsToRemove).Trim();                    
+                    encodedGame = encodedGame.Remove(0, amountOfCharsToRemove).Trim();
                 }
                 board.ExecuteMoves(correspondingStringToMoves.Substring(0, correspondingStringToMoves.IndexOf('~')), correspondingStringToMoves.Substring(correspondingStringToMoves.IndexOf('~') + 1));
-
             }
             BigInteger correspondingNum = 0;
             for (int i = indeces.Count - 1; i > 0; i--)
@@ -128,11 +127,21 @@ namespace ChessMessageEncoder
             for (int i = power - 1; i > -1; i--)
             {
                 int temp = (int)(correspondingNum / (BigInteger)Math.Pow(256, i));
-                correspondingNum -= (BigInteger)(Math.Pow(256, i) * temp);
+                correspondingNum -= (UnlimitiedPOWER(256,i) * temp);
                 bytes[i] = (byte)temp;
                 Console.Write(bytes[i] + " ");
             }
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        public static BigInteger UnlimitiedPOWER(BigInteger baseNum, int powerUNLIMITEDPOWER)
+        {
+            BigInteger output = 1;
+            for (int i = 0; i < powerUNLIMITEDPOWER; i++)
+            {
+                output *= baseNum;
+            }
+            return output;
         }
 
         static void Main(string[] args)
@@ -149,7 +158,7 @@ namespace ChessMessageEncoder
                     Console.ReadLine();
                     Console.Clear();
                 }
-                else if(action == "2" || action == "Decode" || action == "decode" || action == "d" || action == "D")
+                else if (action == "2" || action == "Decode" || action == "decode" || action == "d" || action == "D")
                 {
                     var a = Decode(Console.ReadLine());
                     Console.WriteLine();
@@ -173,10 +182,10 @@ namespace ChessMessageEncoder
             chessPieces = new Dictionary<string, ChessPiece>();
             string pawnNumPos = "2";
             string otherNumPos = "1";
-            bool isWhite = true;            
+            bool isWhite = true;
             for (int side = 0; side < 2; side++)
             {
-                for(int pawns = 0;pawns < abMoves.Count;pawns++)
+                for (int pawns = 0; pawns < abMoves.Count; pawns++)
                 {
                     chessPieces.Add(abMoves[pawns] + pawnNumPos, new ChessPiece(' ', abMoves[pawns] + pawnNumPos, isWhite));
                 }
@@ -198,9 +207,9 @@ namespace ChessMessageEncoder
         {
             var possibleMoves = new List<string>();
             var previousPieceNotation = new List<string>();
-            foreach(ChessPiece piece in chessPieces.Values)
+            foreach (ChessPiece piece in chessPieces.Values)
             {
-                if(piece.IsWhite == isWhitesTurn)
+                if (piece.IsWhite == isWhitesTurn)
                 {
                     possibleMoves.AddRange(piece.GenerateMoves(chessPieces));
                 }
@@ -258,7 +267,7 @@ namespace ChessMessageEncoder
                     }
                     if (CurrentPos[1] == '7' || CurrentPos[1] == '2')
                     {
-                        string inMyWay =  "";
+                        string inMyWay = "";
                         if (IsWhite)
                         {
                             addition = "" + CurrentPos[0] + "4";
@@ -269,8 +278,8 @@ namespace ChessMessageEncoder
                             addition = "" + CurrentPos[0] + "5";
                             inMyWay = "" + CurrentPos[0] + "6";
                         }
-                        if (!chessPieces.ContainsKey(addition) && !chessPieces.ContainsKey(inMyWay)) 
-                        { 
+                        if (!chessPieces.ContainsKey(addition) && !chessPieces.ContainsKey(inMyWay))
+                        {
                             possibleMoves.Add(CurrentNotation + "~" + addition);
                         }
                     }
@@ -366,13 +375,13 @@ namespace ChessMessageEncoder
                             }
                             if (chessPieces.ContainsKey(addition.Substring(1)) && chessPieces[addition.Substring(1)].IsWhite != IsWhite && chessPieces[addition.Substring(1)].PieceType != 'K')
                             {
-                                possibleMoves.Add(CurrentNotation + "~" + addition.Insert(1,"x"));
+                                possibleMoves.Add(CurrentNotation + "~" + addition.Insert(1, "x"));
                             }
-                        }                        
+                        }
                     }
                     break;
                 case 'B':
-                    BishopMoveGeneration(possibleMoves,chessPieces);
+                    BishopMoveGeneration(possibleMoves, chessPieces);
                     break;
                 case 'R':
                     RookMoveGeneration(possibleMoves, chessPieces);
@@ -386,7 +395,7 @@ namespace ChessMessageEncoder
                     int numMoveChange = 1;
                     for (int i = 0; i < 8; i++)
                     {
-                        switch(i)
+                        switch (i)
                         {
                             case 1:
                                 abMoveChange = 0;
@@ -410,21 +419,21 @@ namespace ChessMessageEncoder
                                 abMoveChange = -1;
                                 break;
                         }
-                        if(abMoves.IndexOf(CurrentPos[0]) + abMoveChange < abMoves.Count && int.Parse(CurrentPos[1].ToString()) + numMoveChange < 9 && int.Parse(CurrentPos[1].ToString()) + numMoveChange > 0)
+                        if (abMoves.IndexOf(CurrentPos[0]) + abMoveChange < abMoves.Count && int.Parse(CurrentPos[1].ToString()) + numMoveChange < 9 && int.Parse(CurrentPos[1].ToString()) + numMoveChange > 0)
                         {
                             addition = "" + abMoves[abMoves.IndexOf(CurrentPos[0]) + abMoveChange] + (int.Parse(CurrentPos[1].ToString()) + numMoveChange).ToString();
-                            if(!chessPieces.ContainsKey(addition))
+                            if (!chessPieces.ContainsKey(addition))
                             {
                                 possibleMoves.Add(CurrentNotation + "~" + PieceType + addition);
                             }
                             if (chessPieces.ContainsKey(addition) && IsWhite != chessPieces[addition].IsWhite && chessPieces[addition].PieceType != 'K')
                             {
-                                possibleMoves.Add(CurrentNotation + "~" + PieceType + addition.Insert(1,"x"));
-                            }                            
+                                possibleMoves.Add(CurrentNotation + "~" + PieceType + addition.Insert(1, "x"));
+                            }
                         }
                     }
                     break;
-            }            
+            }
             return possibleMoves;
         }
 
