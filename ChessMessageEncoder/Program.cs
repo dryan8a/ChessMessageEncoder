@@ -20,10 +20,10 @@ namespace ChessMessageEncoder
                 Console.Write(bytes[i] + " ");
             }
             Array.Reverse(bytes);
-            BigInteger correspondingNum = (BigInteger)Math.Pow(256, bytes.Length);
+            BigInteger correspondingNum = BigInteger.Pow(256, bytes.Length);
             for (int i = 1; i <= bytes.Length; i++)
             {
-                correspondingNum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
+                correspondingNum += bytes[i - 1] * BigInteger.Pow(256, bytes.Length - i);
             }
             Console.WriteLine("");
             Console.WriteLine(correspondingNum);
@@ -92,7 +92,7 @@ namespace ChessMessageEncoder
                 indeces.Add(moves.IndexOf(correspondingStringToMoves));
                 if (encodedGame.Length < amountOfCharsToRemove)
                 {
-                    encodedGame = "";
+                    break;
                 }
                 else
                 {
@@ -108,30 +108,27 @@ namespace ChessMessageEncoder
             }
             correspondingNum += indeces[0];
             Console.WriteLine(correspondingNum);
-            bool foundPower = false;
-            int power = 0;
-            while (!foundPower)
-            {
-                if (correspondingNum - (BigInteger)Math.Pow(256, power) > 0)
-                {
-                    power++;
-                }
-                else
-                {
-                    power--;
-                    foundPower = true;
-                }
-            }
-            byte[] bytes = new byte[power];
-            correspondingNum -= (BigInteger)Math.Pow(256, power);
-            for (int i = power - 1; i > -1; i--)
-            {
-                int temp = (int)(correspondingNum / (BigInteger)Math.Pow(256, i));
-                correspondingNum -= (UnlimitiedPOWER(256,i) * temp);
-                bytes[i] = (byte)temp;
-                Console.Write(bytes[i] + " ");
-            }
-            return Encoding.UTF8.GetString(bytes);
+
+            // corr = pow
+            // corr = bytes * pow 
+
+            // pow(len) + b[0] * power[length - 1]
+
+            // b[0] = pow(len) / pow(len - 1)
+
+            //Array.Reverse(bytes);
+            //BigInteger correspondingNum = (BigInteger)Math.Pow(256, bytes.Length);
+            //for (int i = 1; i <= bytes.Length; i++)
+            //{
+            //    correspondingNum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
+            //}
+
+            // corout = corin + (res * pow)
+            // corout - (res * pow) = corin
+
+            Span<byte> span = correspondingNum.ToByteArray();
+            span = span.Slice(0, span.Length - 1);
+            return Encoding.UTF8.GetString(span);
         }
 
         public static BigInteger UnlimitiedPOWER(BigInteger baseNum, int powerUNLIMITEDPOWER)
