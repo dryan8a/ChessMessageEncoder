@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Numerics;
+using System.Windows;
 
 namespace ChessMessageEncoder
 {
     class Program
     {
-
+        
         public static string Encode(string message)
-        {
+        {            
             var board = new ChessBoard();
             string Output = "";
             string Input = message;
@@ -19,13 +20,14 @@ namespace ChessMessageEncoder
             {
                 Console.Write(bytes[i] + " ");
             }
+            Console.WriteLine();
             Array.Reverse(bytes);
             BigInteger correspondingNum = BigInteger.Pow(256, bytes.Length);
             for (int i = 1; i <= bytes.Length; i++)
             {
+                Console.WriteLine(correspondingNum);
                 correspondingNum += bytes[i - 1] * BigInteger.Pow(256, bytes.Length - i);
             }
-            Console.WriteLine("");
             Console.WriteLine(correspondingNum);
             Console.WriteLine("");
             int round = 0;
@@ -68,7 +70,7 @@ namespace ChessMessageEncoder
             {
                 if (board.isWhitesTurn && encodedGame.Length > 3)
                 {
-                    encodedGame = encodedGame.Remove(0, 3).Trim();
+                    encodedGame = encodedGame.Remove(0, encodedGame.IndexOf(' ')).Trim();
                 }
                 var moves = board.GetAllPossibleMoves();
                 string correspondingStringToMoves = "";
@@ -78,15 +80,7 @@ namespace ChessMessageEncoder
                 }
                 amountsOfPossibleMoves.Add(moves.Count);
 
-                int amountOfCharsToRemove = 3;
-                if (encodedGame[0] == 'K' || encodedGame[0] == 'Q' || encodedGame[0] == 'N' || encodedGame[0] == 'B' || encodedGame[0] == 'R')
-                {
-                    amountOfCharsToRemove++;
-                }
-                if (encodedGame[1] == 'x')
-                {
-                    amountOfCharsToRemove++;
-                }
+                int amountOfCharsToRemove = encodedGame.IndexOf(' ');                
                 correspondingStringToMoves = correspondingStringToMoves.Remove(correspondingStringToMoves.IndexOf("~" + encodedGame.Substring(0, amountOfCharsToRemove - 1)) + amountOfCharsToRemove);
                 correspondingStringToMoves = correspondingStringToMoves.Substring(correspondingStringToMoves.LastIndexOf('|') + 1);
                 indeces.Add(moves.IndexOf(correspondingStringToMoves));
@@ -105,6 +99,7 @@ namespace ChessMessageEncoder
             {
                 correspondingNum += indeces[i];
                 correspondingNum *= amountsOfPossibleMoves[i - 1];
+                Console.WriteLine(correspondingNum);
             }
             correspondingNum += indeces[0];
             Console.WriteLine(correspondingNum);
@@ -128,7 +123,7 @@ namespace ChessMessageEncoder
 
             Span<byte> span = correspondingNum.ToByteArray();
             span = span.Slice(0, span.Length - 1);
-            return Encoding.UTF8.GetString(span);
+            return Encoding.UTF8.GetString(span);            
         }
 
         public static BigInteger UnlimitiedPOWER(BigInteger baseNum, int powerUNLIMITEDPOWER)
