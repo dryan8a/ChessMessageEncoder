@@ -21,13 +21,7 @@ namespace ChessMessageEncoder
                 Console.Write(bytes[i] + " ");
             }
             Console.WriteLine();
-            Array.Reverse(bytes);
-            BigInteger correspondingNum = BigInteger.Pow(256, bytes.Length);
-            for (int i = 1; i <= bytes.Length; i++)
-            {
-                Console.WriteLine(correspondingNum);
-                correspondingNum += bytes[i - 1] * BigInteger.Pow(256, bytes.Length - i);
-            }
+            BigInteger correspondingNum = BigInteger.Pow(256, bytes.Length) + new BigInteger(bytes);
             Console.WriteLine(correspondingNum);
             Console.WriteLine("");
             int round = 0;
@@ -42,6 +36,7 @@ namespace ChessMessageEncoder
                 string tempExecutedMove = moves[(int)(correspondingNum % moves.Count)].Substring(moves[(int)(correspondingNum % moves.Count)].IndexOf("~") + 1);
                 Output += tempExecutedMove + " ";
                 board.ExecuteMoves(moves[(int)(correspondingNum % moves.Count)].Substring(0, moves[(int)(correspondingNum % moves.Count)].IndexOf("~")), tempExecutedMove);
+                Console.WriteLine(moves.Count);
                 correspondingNum /= moves.Count;
             }
             if (board.isWhitesTurn)
@@ -79,11 +74,20 @@ namespace ChessMessageEncoder
                     correspondingStringToMoves += (moves[i] + "|");
                 }
                 amountsOfPossibleMoves.Add(moves.Count);
-
-                int amountOfCharsToRemove = encodedGame.IndexOf(' ');                
+                int amountOfCharsToRemove = 0;
+                if (encodedGame.Contains(' '))
+                {
+                    amountOfCharsToRemove = encodedGame.IndexOf(' ') + 1;  
+                }
+                else
+                {
+                    amountOfCharsToRemove = encodedGame.Length + 1;
+                }
+                              
                 correspondingStringToMoves = correspondingStringToMoves.Remove(correspondingStringToMoves.IndexOf("~" + encodedGame.Substring(0, amountOfCharsToRemove - 1)) + amountOfCharsToRemove);
                 correspondingStringToMoves = correspondingStringToMoves.Substring(correspondingStringToMoves.LastIndexOf('|') + 1);
                 indeces.Add(moves.IndexOf(correspondingStringToMoves));
+
                 if (encodedGame.Length < amountOfCharsToRemove)
                 {
                     break;
@@ -99,7 +103,6 @@ namespace ChessMessageEncoder
             {
                 correspondingNum += indeces[i];
                 correspondingNum *= amountsOfPossibleMoves[i - 1];
-                Console.WriteLine(correspondingNum);
             }
             correspondingNum += indeces[0];
             Console.WriteLine(correspondingNum);
