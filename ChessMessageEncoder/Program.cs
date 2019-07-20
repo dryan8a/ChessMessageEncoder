@@ -32,7 +32,7 @@ namespace ChessMessageEncoder
                     round++;
                     Output += round.ToString() + ". ";
                 }
-                var moves = board.GetAllPossibleMoves();
+                var moves = board.GetAllPossibleMoves().Moves;
                 string tempExecutedMove = moves[(int)(correspondingNum % moves.Count)].Substring(moves[(int)(correspondingNum % moves.Count)].IndexOf("~") + 1);
                 Output += tempExecutedMove + " ";
                 board.ExecuteMoves(moves[(int)(correspondingNum % moves.Count)].Substring(0, moves[(int)(correspondingNum % moves.Count)].IndexOf("~")), tempExecutedMove);
@@ -66,7 +66,7 @@ namespace ChessMessageEncoder
                 {
                     encodedGame = encodedGame.Remove(0, encodedGame.IndexOf(' ')).Trim();
                 }
-                var moves = board.GetAllPossibleMoves();
+                var moves = board.GetAllPossibleMoves().Moves;
                 string correspondingStringToMoves = "";
                 for (int i = 0; i < moves.Count; i++)
                 {
@@ -197,18 +197,24 @@ namespace ChessMessageEncoder
             }
         }
 
-        public List<string> GetAllPossibleMoves()
+        public (List<string> Moves,bool CanKillTheKing) GetAllPossibleMoves()
         {
             var possibleMoves = new List<string>();
             var previousPieceNotation = new List<string>();
+            bool regicide = false;
             foreach (ChessPiece piece in chessPieces.Values)
             {
                 if (piece.IsWhite == isWhitesTurn)
                 {
-                    possibleMoves.AddRange(piece.GenerateMoves(chessPieces));
+                    var returnTuple = piece.GenerateMoves(chessPieces);
+                    possibleMoves.AddRange(returnTuple.Moves);
+                    if(returnTuple.CanKillTheKing)
+                    {
+                        regicide = true;
+                    }
                 }
             }
-            return possibleMoves;
+            return (possibleMoves,regicide);
         }
 
         public void ExecuteMoves(string PreviousNotation, string ExecutedMove)
@@ -245,7 +251,7 @@ namespace ChessMessageEncoder
             ParentBoard = parentBoard;
         }
 
-        public List<string> GenerateMoves(Dictionary<string, ChessPiece> chessPieces)
+        public (List<string> Moves,bool CanKillTheKing) GenerateMoves(Dictionary<string, ChessPiece> chessPieces)
         {
             List<string> possibleMoves = new List<string>();
             string addition = "";
@@ -297,9 +303,16 @@ namespace ChessMessageEncoder
                             {
                                 addition = CurrentPos[0] + "x" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                             }
-                            if (chessPieces.ContainsKey(addition) && chessPieces[addition].IsWhite != chessPieces[addition].IsWhite && chessPieces[addition].PieceType != 'K' && !possibleMoves.Contains(CurrentNotation + "~" + addition))
+                            if (chessPieces.ContainsKey(addition) && chessPieces[addition].IsWhite != chessPieces[addition].IsWhite && !possibleMoves.Contains(CurrentNotation + "~" + addition))
                             {
-                                possibleMoves.Add(CurrentNotation + "~" + addition);
+                                if(chessPieces[addition].PieceType == 'K')
+                                {
+                                    doesPutTheKingIntoCheck = true;
+                                }
+                                else
+                                {
+                                    possibleMoves.Add(CurrentNotation + "~" + addition);
+                                }
                             }
                         }
                         abMoveIndex -= 2;
@@ -374,22 +387,29 @@ namespace ChessMessageEncoder
                             {
                                 possibleMoves.Add(CurrentNotation + "~" + addition);
                             }
-                            if (chessPieces.ContainsKey(addition.Substring(1)) && chessPieces[addition.Substring(1)].IsWhite != IsWhite && chessPieces[addition.Substring(1)].PieceType != 'K' && !possibleMoves.Contains(CurrentNotation + "~" + addition.Insert(1,"x")))
+                            if (chessPieces.ContainsKey(addition.Substring(1)) && chessPieces[addition.Substring(1)].IsWhite != IsWhite && !possibleMoves.Contains(CurrentNotation + "~" + addition.Insert(1,"x")))
                             {
-                                possibleMoves.Add(CurrentNotation + "~" + addition.Insert(1, "x"));
+                                if(chessPieces[addition.Substring(1)].PieceType == 'K')
+                                {
+                                    doesPutTheKingIntoCheck = true;
+                                }
+                                else
+                                {
+                                    possibleMoves.Add(CurrentNotation + "~" + addition.Insert(1, "x"));
+                                }
                             }
                         }
                     }
                     break;
                 case 'B':
-                    BishopMoveGeneration(possibleMoves, chessPieces);
+                    BishopMoveGeneration(possibleMoves, chessPieces, ref doesPutTheKingIntoCheck);
                     break;
                 case 'R':
-                    RookMoveGeneration(possibleMoves, chessPieces);
+                    RookMoveGeneration(possibleMoves, chessPieces, ref doesPutTheKingIntoCheck);
                     break;
                 case 'Q':
-                    BishopMoveGeneration(possibleMoves, chessPieces);
-                    RookMoveGeneration(possibleMoves, chessPieces);
+                    BishopMoveGeneration(possibleMoves, chessPieces, ref doesPutTheKingIntoCheck);
+                    RookMoveGeneration(possibleMoves, chessPieces, ref doesPutTheKingIntoCheck);
                     break;
                 case 'K':
                     int abMoveChange = 1;
@@ -420,26 +440,39 @@ namespace ChessMessageEncoder
                                 abMoveChange = -1;
                                 break;
                         }
-                        if (abMoves.IndexOf(CurrentPos[0]) + abMoveChange < abMoves.Count && int.Parse(CurrentPos[1].ToString()) + numMoveChange < 9 && int.Parse(CurrentPos[1].ToString()) + numMoveChange > 0)
+                        if (abMoves.IndexOf(CurrentPos[0]) + abMoveChange < abMoves.Count && abMoves.IndexOf(CurrentPos[0]) + abMoveChange > 0 && int.Parse(CurrentPos[1].ToString()) + numMoveChange < 9 && int.Parse(CurrentPos[1].ToString()) + numMoveChange > 0)
                         {
                             addition = "" + abMoves[abMoves.IndexOf(CurrentPos[0]) + abMoveChange] + (int.Parse(CurrentPos[1].ToString()) + numMoveChange).ToString();
+                            ChessBoard boardForCheckCheck = ParentBoard;
+                            boardForCheckCheck.ExecuteMoves(CurrentNotation, "" + PieceType + addition);
+                            if(boardForCheckCheck.GetAllPossibleMoves().CanKillTheKing)
+                            {
+                                continue;
+                            }
                             if (!chessPieces.ContainsKey(addition) && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + addition))
                             {
                                 possibleMoves.Add(CurrentNotation + "~" + PieceType + addition);
                             }
-                            if (chessPieces.ContainsKey(addition) && IsWhite != chessPieces[addition].IsWhite && chessPieces[addition].PieceType != 'K' && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + addition.Insert(1,"x")))
+                            if (chessPieces.ContainsKey(addition) && IsWhite != chessPieces[addition].IsWhite && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + addition.Insert(1,"x")))
                             {
-                                possibleMoves.Add(CurrentNotation + "~" + PieceType + addition.Insert(1, "x"));
+                                if (chessPieces[addition].PieceType == 'K')
+                                {
+                                    doesPutTheKingIntoCheck = true;
+                                }
+                                else
+                                {
+                                    possibleMoves.Add(CurrentNotation + "~" + PieceType + addition.Insert(1, "x"));
+                                }
                             }
                         }
                     }
                     break;
             }
-            return possibleMoves;
+            return (possibleMoves,doesPutTheKingIntoCheck);
         }
 
-        private void RookMoveGeneration(List<string> possibleMoves, Dictionary<string, ChessPiece> chessPieces)
-        {
+        private void RookMoveGeneration(List<string> possibleMoves, Dictionary<string, ChessPiece> chessPieces, ref bool doesPutTheKingInCheck)
+        {            
             int moveChange = 1;
             string currentPos = CurrentPos;
             for (int i = 0; i < 2; i++)
@@ -456,9 +489,16 @@ namespace ChessMessageEncoder
                     }
                     if (chessPieces.ContainsKey(currentPos) && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + "x" + currentPos))
                     {
-                        if (IsWhite != chessPieces[currentPos].IsWhite && chessPieces[currentPos].PieceType != 'K')
+                        if (IsWhite != chessPieces[currentPos].IsWhite)
                         {
-                            possibleMoves.Add(CurrentNotation + "~" + PieceType + "x" + currentPos);
+                            if (chessPieces[currentPos].PieceType == 'K')
+                            {
+                                doesPutTheKingInCheck = true;
+                            }
+                            else
+                            {
+                                possibleMoves.Add(CurrentNotation + "~" + PieceType + "x" + currentPos);
+                            }
                         }
                         break;
                     }
@@ -486,9 +526,16 @@ namespace ChessMessageEncoder
                     }
                     if (chessPieces.ContainsKey(currentPos) && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + "x" + currentPos))
                     {
-                        if (IsWhite != chessPieces[currentPos].IsWhite && chessPieces[currentPos].PieceType != 'K')
+                        if (IsWhite != chessPieces[currentPos].IsWhite)
                         {
-                            possibleMoves.Add(CurrentNotation + "~" + PieceType + "x" + currentPos);
+                            if (chessPieces[currentPos].PieceType == 'K')
+                            {
+                                doesPutTheKingInCheck = true;
+                            }
+                            else
+                            {
+                                possibleMoves.Add(CurrentNotation + "~" + PieceType + "x" + currentPos);
+                            }
                         }
                         break;
                     }
@@ -501,7 +548,7 @@ namespace ChessMessageEncoder
             }
         }
 
-        private void BishopMoveGeneration(List<string> possibleMoves, Dictionary<string, ChessPiece> chessPieces)
+        private void BishopMoveGeneration(List<string> possibleMoves, Dictionary<string, ChessPiece> chessPieces, ref bool doesPutTheKingInCheck)
         {
             string currentPos = CurrentPos;
             int abMoveChange = 1;
@@ -533,9 +580,16 @@ namespace ChessMessageEncoder
                     }
                     if (chessPieces.ContainsKey(currentPos) && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + "x" + currentPos))
                     {
-                        if (IsWhite != chessPieces[currentPos].IsWhite && chessPieces[currentPos].PieceType != 'K')
+                        if (IsWhite != chessPieces[currentPos].IsWhite)
                         {
-                            possibleMoves.Add(CurrentNotation + "~" + PieceType + "x" + currentPos);
+                            if(chessPieces[currentPos].PieceType == 'K')
+                            {
+                                doesPutTheKingInCheck = true;
+                            }
+                            else
+                            {
+                                possibleMoves.Add(CurrentNotation + "~" + PieceType + "x" + currentPos);
+                            }
                         }
                         break;
                     }
