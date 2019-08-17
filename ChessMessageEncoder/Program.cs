@@ -197,7 +197,7 @@ namespace ChessMessageEncoder
             }
         }
 
-        public (List<string> Moves,bool CanKillTheKing) GetAllPossibleMoves()
+        public (List<string> Moves,bool CanKillTheKing) GetAllPossibleMoves(bool isRegicideCheck = false)
         {
             var possibleMoves = new List<string>();
             var previousPieceNotation = new List<string>();
@@ -206,7 +206,7 @@ namespace ChessMessageEncoder
             {
                 if (piece.IsWhite == isWhitesTurn)
                 {
-                    var returnTuple = piece.GenerateMoves(chessPieces);
+                    var returnTuple = piece.GenerateMoves(chessPieces, isRegicideCheck);
                     possibleMoves.AddRange(returnTuple.Moves);
                     if(returnTuple.CanKillTheKing)
                     {
@@ -251,7 +251,7 @@ namespace ChessMessageEncoder
             ParentBoard = parentBoard;
         }
 
-        public (List<string> Moves,bool CanKillTheKing) GenerateMoves(Dictionary<string, ChessPiece> chessPieces)
+        public (List<string> Moves,bool CanKillTheKing) GenerateMoves(Dictionary<string, ChessPiece> chessPieces, bool isRegicideCheck)
         {
             List<string> possibleMoves = new List<string>();
             string addition = "";
@@ -443,11 +443,14 @@ namespace ChessMessageEncoder
                         if (abMoves.IndexOf(CurrentPos[0]) + abMoveChange < abMoves.Count && abMoves.IndexOf(CurrentPos[0]) + abMoveChange > 0 && int.Parse(CurrentPos[1].ToString()) + numMoveChange < 9 && int.Parse(CurrentPos[1].ToString()) + numMoveChange > 0)
                         {
                             addition = "" + abMoves[abMoves.IndexOf(CurrentPos[0]) + abMoveChange] + (int.Parse(CurrentPos[1].ToString()) + numMoveChange).ToString();
-                            ChessBoard boardForCheckCheck = ParentBoard;
-                            boardForCheckCheck.ExecuteMoves(CurrentNotation, "" + PieceType + addition);
-                            if(boardForCheckCheck.GetAllPossibleMoves().CanKillTheKing)
+                            if (!isRegicideCheck)
                             {
-                                continue;
+                                ChessBoard boardForCheckCheck = ParentBoard;
+                                boardForCheckCheck.ExecuteMoves(CurrentNotation, "" + PieceType + addition);
+                                if (boardForCheckCheck.GetAllPossibleMoves(true).CanKillTheKing)
+                                {
+                                    continue;
+                                }
                             }
                             if (!chessPieces.ContainsKey(addition) && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + addition))
                             {
