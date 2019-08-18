@@ -106,23 +106,6 @@ namespace ChessMessageEncoder
             correspondingNum += indeces[0];
             Console.WriteLine(correspondingNum);
 
-            // corr = pow
-            // corr = bytes * pow 
-
-            // pow(len) + b[0] * power[length - 1]
-
-            // b[0] = pow(len) / pow(len - 1)
-
-            //Array.Reverse(bytes);
-            //BigInteger correspondingNum = (BigInteger)Math.Pow(256, bytes.Length);
-            //for (int i = 1; i <= bytes.Length; i++)
-            //{
-            //    correspondingNum += bytes[i - 1] * (int)Math.Pow(256, bytes.Length - i);
-            //}
-
-            // corout = corin + (res * pow)
-            // corout - (res * pow) = corin
-
             Span<byte> span = correspondingNum.ToByteArray();
             span = span.Slice(0, span.Length - 1);
             return Encoding.UTF8.GetString(span);            
@@ -166,9 +149,9 @@ namespace ChessMessageEncoder
     }
     class ChessBoard
     {
-        public Dictionary<string, ChessPiece> chessPieces;
-        public bool isWhitesTurn;
-        readonly List<char> abMoves = "abcdefgh".ToCharArray().ToList();
+        public Dictionary<string, ChessPiece> chessPieces { get; private set; }
+        public bool isWhitesTurn { get; private set; }
+        static readonly List<char> abMoves = "abcdefgh".ToCharArray().ToList();
 
         public ChessBoard()
         {
@@ -195,6 +178,10 @@ namespace ChessMessageEncoder
                 otherNumPos = "8";
                 isWhite = false;
             }
+        }
+        public ChessBoard(ChessBoard OriginalBoard)
+        {
+            
         }
 
         public (List<string> Moves,bool CanKillTheKing) GetAllPossibleMoves(bool isRegicideCheck = false)
@@ -443,7 +430,7 @@ namespace ChessMessageEncoder
                         if (abMoves.IndexOf(CurrentPos[0]) + abMoveChange < abMoves.Count && abMoves.IndexOf(CurrentPos[0]) + abMoveChange > 0 && int.Parse(CurrentPos[1].ToString()) + numMoveChange < 9 && int.Parse(CurrentPos[1].ToString()) + numMoveChange > 0)
                         {
                             addition = "" + abMoves[abMoves.IndexOf(CurrentPos[0]) + abMoveChange] + (int.Parse(CurrentPos[1].ToString()) + numMoveChange).ToString();
-                            if (!isRegicideCheck)
+                            if (!isRegicideCheck && (!chessPieces.ContainsKey(addition) || (chessPieces.ContainsKey(addition) && IsWhite != chessPieces[addition].IsWhite)))
                             {
                                 ChessBoard boardForCheckCheck = ParentBoard;
                                 boardForCheckCheck.ExecuteMoves(CurrentNotation, "" + PieceType + addition);
