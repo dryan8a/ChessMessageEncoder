@@ -153,6 +153,8 @@ namespace ChessMessageEncoder
         public bool isWhitesTurn;
         static readonly List<char> abMoves = "abcdefgh".ToCharArray().ToList();
 
+        //static char[] pieceLetters = "RNBQKBNR".ToCharArray();
+
         public ChessBoard()
         {
             isWhitesTurn = true;
@@ -166,6 +168,11 @@ namespace ChessMessageEncoder
                 {
                     chessPieces.Add(abMoves[pawns] + pawnNumPos, new ChessPiece(' ', abMoves[pawns] + pawnNumPos, isWhite, this));
                 }
+                //char abPosition = 'a';
+                //for(int i = 0; i < 8; i++)
+                //{
+                //    chessPieces.Add($"{(abPosition + i)}{otherNumPos.ToString()}", new ChessPiece(pieceLetters[i], $"{(abPosition + i)}{otherNumPos.ToString()}", isWhite, this));
+                //}                
                 chessPieces.Add("a" + otherNumPos, new ChessPiece('R', "a" + otherNumPos, isWhite,this));
                 chessPieces.Add("b" + otherNumPos, new ChessPiece('N', "b" + otherNumPos, isWhite,this));
                 chessPieces.Add("c" + otherNumPos, new ChessPiece('B', "c" + otherNumPos, isWhite,this));
@@ -174,6 +181,7 @@ namespace ChessMessageEncoder
                 chessPieces.Add("f" + otherNumPos, new ChessPiece('B', "f" + otherNumPos, isWhite,this));
                 chessPieces.Add("g" + otherNumPos, new ChessPiece('N', "g" + otherNumPos, isWhite,this));
                 chessPieces.Add("h" + otherNumPos, new ChessPiece('R', "h" + otherNumPos, isWhite,this));
+                
                 pawnNumPos = "7";
                 otherNumPos = "8";
                 isWhite = false;
@@ -207,23 +215,28 @@ namespace ChessMessageEncoder
                 }
             }
             ChessBoard boardForForcedCheckCheck = new ChessBoard(this);
-            if (boardForForcedCheckCheck.GetAllPossibleMoves(!isWhitesTurn, true).CanKillTheKing)
+            string murdererPosition = "";
+            var RecievedPossibleMoves = boardForForcedCheckCheck.GetAllPossibleMoves(!isWhitesTurn, ref murdererPosition, true);
+            if (RecievedPossibleMoves.CanKillTheKing)
             {
-                foreach(string fullmove in possibleMoves)
+                for(int i = 0;i<possibleMoves.Count;i++)
                 {
-                    string move = fullmove.Substring(fullmove.IndexOf('~'));
-                    //if (move.Contains('x') && move.Substring(1) == 
-                    
+                    string move = possibleMoves[i].Substring(possibleMoves[i].IndexOf('~') + 1);
+                    if (!(move.Contains('x') && move.Substring(2) == murdererPosition || move[0] == 'K'))
+                    {
+                        possibleMoves.RemoveAt(i);
+                        i--;
+                    }                    
                 }
-            }            
+                ;
+            }
             return (possibleMoves, regicide);
         }
-        public (List<string> Moves, bool CanKillTheKing) GetAllPossibleMoves(bool isWhitesTurn, bool isRegicideCheck = false)
+        public (List<string> Moves, bool CanKillTheKing) GetAllPossibleMoves(bool isWhitesTurn, ref string positionOfPieceWhichPutsTheKingInCheck, bool isRegicideCheck = false)
         {
             var possibleMoves = new List<string>();
             var previousPieceNotation = new List<string>();
-            bool regicide = false;
-            string positionOfPieceWhichPutsTheKingInCheck;
+            bool regicide = false;           
             foreach (ChessPiece piece in chessPieces.Values)
             {
                 if (piece.IsWhite == isWhitesTurn)
@@ -298,7 +311,7 @@ namespace ChessMessageEncoder
                         addition = "" + CurrentPos[0] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                     }
                     if (!chessPieces.ContainsKey(addition) && !possibleMoves.Contains(CurrentNotation + "~" + addition))
-                    {
+                    {                           
                         possibleMoves.Add(CurrentNotation + "~" + addition);
                     }
                     if (CurrentPos[1] == '7' || CurrentPos[1] == '2')
@@ -499,6 +512,14 @@ namespace ChessMessageEncoder
                         }
                     }
                     break;
+            }
+            for(int i = 0;i<possibleMoves.Count;i++)
+            {
+                if(possibleMoves[i].Substring(possibleMoves[i].IndexOf('~') + 1).Length < 2)
+                {
+                    possibleMoves.RemoveAt(i);
+                    i--;
+                }
             }
             return (possibleMoves,doesPutTheKingIntoCheck);
         }
