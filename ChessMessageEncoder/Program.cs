@@ -344,9 +344,9 @@ namespace ChessMessageEncoder
                             {
                                 addition = CurrentPos[0] + "x" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                             }
-                            if (chessPieces.ContainsKey(addition) && chessPieces[addition].IsWhite != chessPieces[addition].IsWhite && !possibleMoves.Contains(CurrentNotation + "~" + addition))
+                            if (chessPieces.ContainsKey(addition.Substring(2)) && chessPieces[addition.Substring(2)].IsWhite != IsWhite && !possibleMoves.Contains(CurrentNotation + "~" + addition))
                             {
-                                if(chessPieces[addition].PieceType == 'K')
+                                if(chessPieces[addition.Substring(2)].PieceType == 'K')
                                 {
                                     doesPutTheKingIntoCheck = true;
                                 }
@@ -525,7 +525,7 @@ namespace ChessMessageEncoder
 
         private void RookMoveGeneration(List<string> possibleMoves, Dictionary<string, ChessPiece> chessPieces, ref bool doesPutTheKingInCheck)
         {
-            string currentPos = CurrentPos;
+            string currentPos;
             int abMoveChange = 1;
             int numMoveChange = 0;
             for (int i = 0; i < 4; i++)
@@ -569,7 +569,7 @@ namespace ChessMessageEncoder
                         }
                         break;
                     }
-                    else if (!possibleMoves.Contains(CurrentNotation + "~" + PieceType + currentPos))
+                    else if (!chessPieces.ContainsKey(currentPos) && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + currentPos))
                     {
                         possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                     }
@@ -694,7 +694,7 @@ namespace ChessMessageEncoder
                         }
                         break;
                     }
-                    else if (!possibleMoves.Contains(CurrentNotation + "~" + PieceType + currentPos))
+                    else if (!chessPieces.ContainsKey(currentPos) && !possibleMoves.Contains(CurrentNotation + "~" + PieceType + currentPos))
                     {
                         possibleMoves.Add(CurrentNotation + "~" + PieceType + currentPos);
                     }
