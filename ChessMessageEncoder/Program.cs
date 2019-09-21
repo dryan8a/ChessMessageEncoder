@@ -33,8 +33,12 @@ namespace ChessMessageEncoder
                     Output += round.ToString() + ". ";
                 }
                 var moves = board.GetAllPossibleMoves().Moves;
-                string tempExecutedMove = moves[(int)(correspondingNum % moves.Count)].Substring(moves[(int)(correspondingNum % moves.Count)].IndexOf("~") + 1);
-                Output += tempExecutedMove + " ";
+                string tempExecutedMove = moves[(int)(correspondingNum % moves.Count)];
+                if (tempExecutedMove[tempExecutedMove.IndexOf('~') + 1] < 91)
+                {
+                    tempExecutedMove = tempExecutedMove.Remove(tempExecutedMove.IndexOf('~') + 1,1);
+                }
+                Output += tempExecutedMove.Remove(tempExecutedMove.IndexOf('~'),1) + " ";
                 board.ExecuteMoves(moves[(int)(correspondingNum % moves.Count)].Substring(0, moves[(int)(correspondingNum % moves.Count)].IndexOf("~")), tempExecutedMove);
                 correspondingNum /= moves.Count;
             }
@@ -73,7 +77,7 @@ namespace ChessMessageEncoder
                     correspondingStringToMoves += (moves[i] + "|");
                 }
                 amountsOfPossibleMoves.Add(moves.Count);
-                int amountOfCharsToRemove = 0;
+                int amountOfCharsToRemove;
                 if (encodedGame.Contains(' '))
                 {
                     amountOfCharsToRemove = encodedGame.IndexOf(' ') + 1;  
@@ -315,7 +319,7 @@ namespace ChessMessageEncoder
                     }
                     if (CurrentPos[1] == '7' || CurrentPos[1] == '2')
                     {
-                        string inMyWay = "";
+                        string inMyWay;
                         if (IsWhite)
                         {
                             addition = "" + CurrentPos[0] + "4";
@@ -338,19 +342,19 @@ namespace ChessMessageEncoder
                         {
                             if (IsWhite)
                             {
-                                addition = CurrentPos[0] + "x" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
+                                addition = "x" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) + 1).ToString();
                             }
                             else
                             {
-                                addition = CurrentPos[0] + "x" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
+                                addition = "x" + abMoves[abMoveIndex] + (int.Parse(CurrentPos[1].ToString()) - 1).ToString();
                             }
-                            if (chessPieces.ContainsKey(addition.Substring(2)) && chessPieces[addition.Substring(2)].IsWhite != IsWhite && !possibleMoves.Contains(CurrentNotation + "~" + addition))
+                            if (chessPieces.ContainsKey(addition.Substring(1)) && chessPieces[addition.Substring(1)].IsWhite != IsWhite)
                             {
-                                if(chessPieces[addition.Substring(2)].PieceType == 'K')
+                                if(chessPieces[addition.Substring(1)].PieceType == 'K')
                                 {
                                     doesPutTheKingIntoCheck = true;
                                 }
-                                else
+                                else if (!possibleMoves.Contains(CurrentNotation + "~" + addition))
                                 {
                                     possibleMoves.Add(CurrentNotation + "~" + addition);
                                 }
