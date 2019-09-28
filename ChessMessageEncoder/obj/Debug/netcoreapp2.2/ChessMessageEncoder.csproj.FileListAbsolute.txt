@@ -4,7 +4,6 @@
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp2.2\ChessMessageEncoder.dll
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp2.2\ChessMessageEncoder.pdb
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp2.2\ChessMessageEncoder.csprojAssemblyReference.cache
-\\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp2.2\ChessMessageEncoder.csproj.CoreCompileInputs.cache
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp2.2\ChessMessageEncoder.AssemblyInfoInputs.cache
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp2.2\ChessMessageEncoder.AssemblyInfo.cs
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp2.2\ChessMessageEncoder.dll
