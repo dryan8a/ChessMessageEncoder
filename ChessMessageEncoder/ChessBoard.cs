@@ -421,6 +421,7 @@ namespace ChessMessageEncoder
                                 if(chessPieces.ContainsKey(abMoves[3-i].ToString() + numMoveChange.ToString()))
                                 {
                                     isClear = false;
+                                    break;
                                 }
                             }
                             if(isClear)
@@ -434,9 +435,10 @@ namespace ChessMessageEncoder
                             isClear = true;
                             for (int i = 0; i < 2; i++)
                             {
-                                if (chessPieces.ContainsKey(abMoves[i+6].ToString() + numMoveChange.ToString()))
+                                if (chessPieces.ContainsKey(abMoves[i+5].ToString() + numMoveChange.ToString()))
                                 {
                                     isClear = false;
+                                    break;
                                 }
                             }
                             if (isClear)

@@ -8,9 +8,9 @@ using System.Windows;
 namespace ChessMessageEncoder
 {
     class Program
-    {        
+    {
         public static string Encode(string message)
-        {            
+        {
             var board = new ChessBoard();
             string Output = "";
             string Input = message;
@@ -35,9 +35,16 @@ namespace ChessMessageEncoder
                 string tempExecutedMove = moves[(int)(correspondingNum % moves.Count)];
                 if (tempExecutedMove[tempExecutedMove.IndexOf('~') + 1] < 91)
                 {
-                    tempExecutedMove = tempExecutedMove.Remove(tempExecutedMove.IndexOf('~') + 1,1);
+                    tempExecutedMove = tempExecutedMove.Remove(tempExecutedMove.IndexOf('~') + 1, 1);
                 }
-                Output += tempExecutedMove.Remove(tempExecutedMove.IndexOf('~'),1) + " ";
+                if (tempExecutedMove.Contains("O-O"))
+                {
+                    Output += tempExecutedMove.Substring(tempExecutedMove.IndexOf('~') + 1) + " ";
+                }
+                else
+                {
+                    Output += tempExecutedMove.Remove(tempExecutedMove.IndexOf('~'), 1) + " ";
+                }
                 board.ExecuteMoves(moves[(int)(correspondingNum % moves.Count)].Substring(0, moves[(int)(correspondingNum % moves.Count)].IndexOf("~")), tempExecutedMove);
                 correspondingNum /= moves.Count;
             }
@@ -77,24 +84,27 @@ namespace ChessMessageEncoder
                 }
                 amountsOfPossibleMoves.Add(moves.Count);
                 int amountOfCharsToRemove;
-                if(encodedGame[0] < 91)
+                if (!encodedGame.Substring(0, 3).Contains("O-O"))
                 {
-                    encodedGame = encodedGame.Remove(1, 2);
-                }
-                else
-                {
-                    encodedGame = encodedGame.Remove(0, 2);
+                    if (encodedGame[0] < 91)
+                    {
+                        encodedGame = encodedGame.Remove(1, 2);
+                    }
+                    else
+                    {
+                        encodedGame = encodedGame.Remove(0, 2);
+                    }
                 }
 
                 if (encodedGame.Contains(' '))
                 {
-                    amountOfCharsToRemove = encodedGame.IndexOf(' ') + 1;  
+                    amountOfCharsToRemove = encodedGame.IndexOf(' ') + 1;
                 }
                 else
                 {
                     amountOfCharsToRemove = encodedGame.Length + 1;
                 }
-                              
+
                 correspondingStringToMoves = correspondingStringToMoves.Remove(correspondingStringToMoves.IndexOf("~" + encodedGame.Substring(0, amountOfCharsToRemove - 1)) + amountOfCharsToRemove);
                 correspondingStringToMoves = correspondingStringToMoves.Substring(correspondingStringToMoves.LastIndexOf('|') + 1);
                 indeces.Add(moves.IndexOf(correspondingStringToMoves));
@@ -120,7 +130,7 @@ namespace ChessMessageEncoder
 
             Span<byte> span = correspondingNum.ToByteArray();
             span = span.Slice(0, span.Length - 1);
-            return Encoding.UTF8.GetString(span);            
+            return Encoding.UTF8.GetString(span);
         }
 
         public static BigInteger UnlimitiedPOWER(BigInteger baseNum, int powerUNLIMITEDPOWER)
@@ -134,7 +144,7 @@ namespace ChessMessageEncoder
         }
 
         static void Main(string[] args)
-        {            
+        {
             while (true)
             {
                 Console.WriteLine("1. Encode");
