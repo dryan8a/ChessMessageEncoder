@@ -110,18 +110,48 @@ namespace ChessMessageEncoder
             {
                 ExecutedMove = ExecutedMove.Remove(ExecutedMove.IndexOf('x'), 1);
             }
-            string ExecutedPos = ExecutedMove.Substring(ExecutedMove.Length - 2);
-            string PreviousPos = PreviousNotation.Substring(PreviousNotation.Length - 2);
-            if (chessPieces.ContainsKey(ExecutedPos))
+            if (ExecutedMove.Contains("O-O"))
             {
-                chessPieces.Remove(ExecutedPos);
+                string numMovePos;
+                if(isWhitesTurn)
+                {
+                    numMovePos = "1";
+                }
+                else
+                {
+                    numMovePos = "8";
+                }
+                if (ExecutedMove.Substring(ExecutedMove.IndexOf('~') + 1) == "O-O-O")
+                {
+                    chessPieces.Add("d" + numMovePos, new ChessPiece(chessPieces["a" + numMovePos]) { CurrentPos = "d" + numMovePos, HasMoved = true});
+                    chessPieces.Add("c" + numMovePos, new ChessPiece(chessPieces["e" + numMovePos]) { CurrentPos = "c" + numMovePos, HasMoved = true});
+                    chessPieces.Remove("a" + numMovePos);
+                    chessPieces.Remove("e" + numMovePos);
+                }
+                else if(ExecutedMove.Substring(ExecutedMove.IndexOf('~') + 1) == "O-O")
+                {
+                    chessPieces.Add("f" + numMovePos, new ChessPiece(chessPieces["h" + numMovePos]) { CurrentPos = "f" + numMovePos, HasMoved = true });
+                    chessPieces.Add("g" + numMovePos, new ChessPiece(chessPieces["e" + numMovePos]) { CurrentPos = "g" + numMovePos, HasMoved = true });
+                    chessPieces.Remove("a" + numMovePos);
+                    chessPieces.Remove("h" + numMovePos);
+                }
             }
-            chessPieces.Add(ExecutedPos, new ChessPiece(chessPieces[PreviousPos].PieceType, ExecutedPos, chessPieces[PreviousPos].IsWhite, this));
-            if (chessPieces[ExecutedPos].PieceType == ' ' && ((ExecutedPos[1] == '1' && !chessPieces[ExecutedPos].IsWhite) || (ExecutedPos[1] == '8' && chessPieces[ExecutedPos].IsWhite)))
+            else
             {
-                chessPieces[ExecutedPos].PieceType = 'Q';
+                string ExecutedPos = ExecutedMove.Substring(ExecutedMove.Length - 2);
+                string PreviousPos = PreviousNotation.Substring(PreviousNotation.Length - 2);
+                if (chessPieces.ContainsKey(ExecutedPos))
+                {
+                    chessPieces.Remove(ExecutedPos);
+                }
+                chessPieces.Add(ExecutedPos, new ChessPiece(chessPieces[PreviousPos].PieceType, ExecutedPos, chessPieces[PreviousPos].IsWhite, this));
+                chessPieces[ExecutedPos].HasMoved = true;
+                if (chessPieces[ExecutedPos].PieceType == ' ' && ((ExecutedPos[1] == '1' && !chessPieces[ExecutedPos].IsWhite) || (ExecutedPos[1] == '8' && chessPieces[ExecutedPos].IsWhite)))
+                {
+                    chessPieces[ExecutedPos].PieceType = 'Q';
+                }
+                chessPieces.Remove(PreviousPos);
             }
-            chessPieces.Remove(PreviousPos);
             isWhitesTurn = !isWhitesTurn;
         }
     }
@@ -369,9 +399,12 @@ namespace ChessMessageEncoder
                             }
                         }
                     }
-                    if(!HasMoved)
+
+                    string positionOfPiece;
+                    bool isClear;
+                    if (!HasMoved)
                     {
-                        if(IsWhite)
+                        if (IsWhite)
                         {
                             numMoveChange = 1;
                         }
@@ -379,7 +412,38 @@ namespace ChessMessageEncoder
                         {
                             numMoveChange = 8;
                         }
-                        //do king-side and queen-side castle check here
+                        positionOfPiece = "a" + numMoveChange.ToString();                        
+                        if (chessPieces.ContainsKey(positionOfPiece) && chessPieces[positionOfPiece].PieceType == 'R' && !chessPieces[positionOfPiece].HasMoved)
+                        {
+                            isClear = true;
+                            for(int i = 0;i<3;i++)
+                            {
+                                if(chessPieces.ContainsKey(abMoves[3-i].ToString() + numMoveChange.ToString()))
+                                {
+                                    isClear = false;
+                                }
+                            }
+                            if(isClear)
+                            {
+                                possibleMoves.Add(CurrentNotation + "~O-O-O");
+                            }
+                        }
+                        positionOfPiece = "h" + numMoveChange.ToString();
+                        if (chessPieces.ContainsKey(positionOfPiece) && chessPieces[positionOfPiece].PieceType == 'R' && !chessPieces[positionOfPiece].HasMoved)
+                        {
+                            isClear = true;
+                            for (int i = 0; i < 2; i++)
+                            {
+                                if (chessPieces.ContainsKey(abMoves[i+6].ToString() + numMoveChange.ToString()))
+                                {
+                                    isClear = false;
+                                }
+                            }
+                            if (isClear)
+                            {
+                                possibleMoves.Add(CurrentNotation + "~O-O");
+                            }
+                        }
                     }
                     break;
             }
