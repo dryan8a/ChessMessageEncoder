@@ -166,29 +166,51 @@ namespace ChessMessageEncoder
                 Console.WriteLine("2. Decode");
                 string action = Console.ReadLine();
                 action = action.Trim();
-
-                Clipboard.SetText(action);
-
+                string output = "";
                 if (action == "1" || action == "encode" || action == "Encode" || action == "e" || action == "E")
                 {
                     Console.WriteLine("1. Enter Message");
                     Console.WriteLine("2. Clipboard");
-                    if (Console.ReadLine() == "1")
+                    action = Console.ReadLine();
+                    Console.WriteLine("Do you want to copy to the Clipboard? (y or n)");
+                    bool shouldCopy = Console.ReadLine().Trim() == "y";
+                    if (action == "1")
                     {
-                        Console.WriteLine(Encode(Console.ReadLine()));
+                        output = Encode(Console.ReadLine());
                     }
-                    else if (Console.ReadLine() == "2")
+                    else if (action == "2")
                     {
-                        
+                        output = Encode(Clipboard.GetText());                        
                     }
+                    if (shouldCopy)
+                    {
+                        Clipboard.SetText(output);
+                    }
+                    Console.WriteLine(output);
                     Console.ReadLine();
                     Console.Clear();
                 }
                 else if (action == "2" || action == "Decode" || action == "decode" || action == "d" || action == "D")
                 {
-                    var a = Decode(Console.ReadLine());
+                    Console.WriteLine("1. Enter Message");
+                    Console.WriteLine("2. Clipboard");
+                    action = Console.ReadLine();
+                    Console.WriteLine("Do you want to copy to the Clipboard? (y or n)");
+                    bool shouldCopy = Console.ReadLine().Trim() == "y";
+                    if (action == "1")
+                    {
+                        output = Decode(Console.ReadLine());
+                    }
+                    else if (action == "2")
+                    {
+                        output = Decode(Clipboard.GetText());
+                    }
+                    if(shouldCopy)
+                    {
+                        Clipboard.SetText(output);
+                    }
                     Console.WriteLine();
-                    Console.WriteLine(a);
+                    Console.WriteLine(output);
                     Console.ReadLine();
                     Console.Clear();
                 }
