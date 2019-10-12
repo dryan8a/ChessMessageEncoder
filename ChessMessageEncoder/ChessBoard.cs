@@ -71,8 +71,8 @@ namespace ChessMessageEncoder
                         tempBoardOfExecutedMove.ExecuteMoves(returnTuple.Moves[i].Substring(0, returnTuple.Moves[i].IndexOf('~')), returnTuple.Moves[i].Substring(returnTuple.Moves[i].IndexOf('~') + 1));
                         if (tempBoardOfExecutedMove.GetAllPossibleMoves(true, true).CanKillTheKing || tempBoardOfExecutedMove.GetAllPossibleMoves(false, true).CanKillTheKing)
                         {
+                            returnTuple.Moves.RemoveAt(i);
                             i--;
-                            returnTuple.Moves.RemoveAt(i + 1);
                         }
                     }
                     possibleMoves.AddRange(returnTuple.Moves);
@@ -84,7 +84,7 @@ namespace ChessMessageEncoder
             }
             return (possibleMoves, regicide);
         }
-        public (List<string> Moves, bool CanKillTheKing) GetAllPossibleMoves(bool isWhitesTurn, bool isRegicideCheck = false)
+        public (List<string> Moves, bool CanKillTheKing) GetAllPossibleMoves(bool isWhitesTurn, bool isRegicideCheck)
         {
             var possibleMoves = new List<string>();
             var previousPieceNotation = new List<string>();
@@ -132,7 +132,7 @@ namespace ChessMessageEncoder
                 {
                     chessPieces.Add("f" + numMovePos, new ChessPiece(chessPieces["h" + numMovePos]) { CurrentPos = "f" + numMovePos, HasMoved = true });
                     chessPieces.Add("g" + numMovePos, new ChessPiece(chessPieces["e" + numMovePos]) { CurrentPos = "g" + numMovePos, HasMoved = true });
-                    chessPieces.Remove("a" + numMovePos);
+                    chessPieces.Remove("e" + numMovePos);
                     chessPieces.Remove("h" + numMovePos);
                 }
             }
@@ -179,6 +179,7 @@ namespace ChessMessageEncoder
             CurrentPos = originalPiece.CurrentPos;
             IsWhite = originalPiece.IsWhite;
             HasMoved = originalPiece.HasMoved;
+            ParentBoard = originalPiece.ParentBoard;
         }
 
         public (List<string> Moves, bool CanKillTheKing) GenerateMoves(Dictionary<string, ChessPiece> chessPieces, bool isRegicideCheck)
@@ -223,7 +224,7 @@ namespace ChessMessageEncoder
                     abMoveIndex = abMoves.IndexOf(CurrentPos[0]) + 1;
                     for (int i = 0; i < 2; i++)
                     {
-                        if (abMoves.IndexOf(CurrentPos[0]) + 1 < abMoves.Count && abMoves.IndexOf(CurrentPos[0]) - 1 > -1)
+                        if ((i == 0 && abMoveIndex < abMoves.Count) || (i == 1 && abMoveIndex > -1))
                         {
                             if (IsWhite)
                             {
@@ -377,7 +378,7 @@ namespace ChessMessageEncoder
                             {
                                 ChessBoard boardForCheckCheck = new ChessBoard(ParentBoard);
                                 boardForCheckCheck.ExecuteMoves(CurrentNotation, "" + PieceType + addition);
-                                if (boardForCheckCheck.GetAllPossibleMoves(true).CanKillTheKing)
+                                if (boardForCheckCheck.GetAllPossibleMoves(true,true).CanKillTheKing)
                                 {
                                     continue;
                                 }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using System.Numerics;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace ChessMessageEncoder
 {
@@ -14,7 +15,7 @@ namespace ChessMessageEncoder
             var board = new ChessBoard();
             string Output = "";
             string Input = message;
-            byte[] bytes = Encoding.UTF8.GetBytes(Input);
+            byte[] bytes = Encoding.UTF8.GetBytes(Input);            
             for (int i = 0; i < bytes.Length; i++)
             {
                 Console.Write(bytes[i] + " ");
@@ -24,6 +25,7 @@ namespace ChessMessageEncoder
             Console.WriteLine(correspondingNum);
             Console.WriteLine("");
             int round = 0;
+            bool hasDied = false;
             while (correspondingNum != 0)
             {
                 if (board.isWhitesTurn)
@@ -32,8 +34,14 @@ namespace ChessMessageEncoder
                     Output += round.ToString() + ". ";
                 }
                 var moves = board.GetAllPossibleMoves().Moves;
+                if(moves.Count == 0)
+                {
+                    Output = "Pre-mature Checkmate or Stalemate has occured, chose a different message. \n TIP: Try changing your wording without altering the meaning of the message";
+                    hasDied = true;
+                    break;
+                }
                 string tempExecutedMove = moves[(int)(correspondingNum % moves.Count)];
-                if (tempExecutedMove[tempExecutedMove.IndexOf('~') + 1] < 91)
+                if (tempExecutedMove[tempExecutedMove.IndexOf('~') + 1] < 91 && !tempExecutedMove.Contains("O-O"))
                 {
                     tempExecutedMove = tempExecutedMove.Remove(tempExecutedMove.IndexOf('~') + 1, 1);
                 }
@@ -48,13 +56,16 @@ namespace ChessMessageEncoder
                 board.ExecuteMoves(moves[(int)(correspondingNum % moves.Count)].Substring(0, moves[(int)(correspondingNum % moves.Count)].IndexOf("~")), tempExecutedMove);
                 correspondingNum /= moves.Count;
             }
-            if (board.isWhitesTurn)
+            if (!hasDied)
             {
-                Output += "{ White resigns. } 0-1";
-            }
-            else
-            {
-                Output += "{ Black resigns. } 1-0";
+                if (board.isWhitesTurn)
+                {
+                    Output += "{ White resigns. } 0-1";
+                }
+                else
+                {
+                    Output += "{ Black resigns. } 1-0";
+                }
             }
             return Output;
         }
@@ -143,17 +154,33 @@ namespace ChessMessageEncoder
             return output;
         }
 
+        [STAThread]
         static void Main(string[] args)
         {
+
+            
+
             while (true)
             {
                 Console.WriteLine("1. Encode");
                 Console.WriteLine("2. Decode");
                 string action = Console.ReadLine();
                 action = action.Trim();
+
+                Clipboard.SetText(action);
+
                 if (action == "1" || action == "encode" || action == "Encode" || action == "e" || action == "E")
                 {
-                    Console.WriteLine(Encode(Console.ReadLine()));
+                    Console.WriteLine("1. Enter Message");
+                    Console.WriteLine("2. Clipboard");
+                    if (Console.ReadLine() == "1")
+                    {
+                        Console.WriteLine(Encode(Console.ReadLine()));
+                    }
+                    else if (Console.ReadLine() == "2")
+                    {
+                        
+                    }
                     Console.ReadLine();
                     Console.Clear();
                 }
