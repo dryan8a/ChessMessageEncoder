@@ -12,3 +12,17 @@
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.csproj.CopyComplete
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.dll
 \\GMRDC1\Folder Redirection\Dylan.Ochoa\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.pdb
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp3.0\ChessMessageEncoder.exe
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp3.0\ChessMessageEncoder.deps.json
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp3.0\ChessMessageEncoder.runtimeconfig.json
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp3.0\ChessMessageEncoder.runtimeconfig.dev.json
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp3.0\ChessMessageEncoder.dll
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\bin\Debug\netcoreapp3.0\ChessMessageEncoder.pdb
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.AssemblyInfoInputs.cache
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.AssemblyInfo.cs
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.dll
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.pdb
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.csproj.AssemblyReference.cache
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.csproj.CoreCompileInputs.cache
+C:\Users\dryan\OneDrive\Documents\GitHub\ChessMessageEncoder\ChessMessageEncoder\obj\Debug\netcoreapp3.0\ChessMessageEncoder.genruntimeconfig.cache

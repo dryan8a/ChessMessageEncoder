@@ -78,7 +78,13 @@ namespace ChessMessageEncoder
                      * check this with the JS example online, you'll get it then
                     */
             var board = new ChessBoard();
-            encodedGame = (encodedGame.Remove(encodedGame.Length - 22)).Trim();
+            encodedGame = (encodedGame.Remove(encodedGame.Length - 4)).Trim();
+
+            if (encodedGame[encodedGame.Length - 1] == '}')
+            {
+                encodedGame = (encodedGame.Remove(encodedGame.Length - 18)).Trim();
+            }
+
             List<int> indeces = new List<int>();
             List<int> amountsOfPossibleMoves = new List<int>();
             while (encodedGame.Length != 0)
